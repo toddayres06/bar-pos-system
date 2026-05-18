@@ -1,10 +1,21 @@
+import { Routes, Route } from 'react-router-dom'
+import AppLayout from './layouts/AppLayout'
+
+function Dashboard() {
+  return (
+    <div className="text-slate-800 text-2xl font-semibold">
+      Dashboard Overview
+    </div>
+  )
+}
+
 function App() {
   return (
-    <div className="min-h-screen bg-slate-100 flex items-center justify-center">
-      <h1 className="text-5xl font-bold text-slate-800">
-        T&J Event Services
-      </h1>
-    </div>
+    <Routes>
+      <Route element={<AppLayout />}>
+        <Route path="/" element={<Dashboard />} />
+      </Route>
+    </Routes>
   )
 }
 
