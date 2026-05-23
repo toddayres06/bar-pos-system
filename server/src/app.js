@@ -3,6 +3,8 @@ import cors from 'cors'
 import helmet from 'helmet'
 import morgan from 'morgan'
 
+import userRoutes from './routes/userRoutes.js'
+
 const app = express()
 
 app.use(cors())
@@ -16,5 +18,7 @@ app.get('/api/health', (req, res) => {
     message: 'API is running',
   })
 })
+
+app.use('/api/users', userRoutes)
 
 export default app
