@@ -6,6 +6,7 @@ import morgan from 'morgan'
 import userRoutes from './routes/userRoutes.js'
 import authRoutes from './routes/authRoutes.js'
 import protectedRoutes from './routes/protectedRoutes.js'
+import dashboardRoutes from './routes/dashboardRoutes.js'
 
 const app = express()
 
@@ -22,6 +23,8 @@ app.get('/api/health', (req, res) => {
 })
 
 app.use('/api/users', userRoutes)
+
+app.use('/api/dashboard', dashboardRoutes)
 
 app.use('/api/auth', authRoutes)
 
