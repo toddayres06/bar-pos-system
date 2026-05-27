@@ -14,3 +14,20 @@ export async function createEvent(eventData) {
 
   return response.data.event
 }
+
+export async function updateEventStatus(id, status) {
+  const response = await api.patch(
+    `/api/events/${id}/status`,
+    { status }
+  )
+
+  return response.data.event
+}
+
+export async function deleteEvent(id) {
+  const response = await api.delete(
+    `/api/events/${id}`
+  )
+
+  return response.data
+}

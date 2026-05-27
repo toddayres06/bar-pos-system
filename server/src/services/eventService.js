@@ -26,3 +26,26 @@ export async function getAllEvents() {
     },
   })
 }
+
+export async function updateEventStatus(
+  eventId,
+  status
+) {
+  return prisma.event.update({
+    where: {
+      id: eventId,
+    },
+
+    data: {
+      status,
+    },
+  })
+}
+
+export async function deleteEvent(eventId) {
+  return prisma.event.delete({
+    where: {
+      id: eventId,
+    },
+  })
+}

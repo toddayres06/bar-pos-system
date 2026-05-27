@@ -5,6 +5,8 @@ import EventForm from '../components/EventForm'
 import {
   fetchEvents,
   createEvent,
+  updateEventStatus,
+  deleteEvent,
 } from '../api/events'
 
 export default function EventsPage() {
@@ -15,7 +17,6 @@ export default function EventsPage() {
   async function loadEvents() {
     try {
       const data = await fetchEvents()
-
       setEvents(data)
     } catch (error) {
       console.error(error)
@@ -40,6 +41,37 @@ export default function EventsPage() {
     }
   }
 
+  async function handleStatusUpdate(id, status) {
+    try {
+      const updated = await updateEventStatus(
+        id,
+        status
+      )
+
+      setEvents((prev) =>
+        prev.map((event) =>
+          event.id === id ? updated : event
+        )
+      )
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  async function handleDelete(id) {
+    try {
+      await deleteEvent(id)
+
+      setEvents((prev) =>
+        prev.filter(
+          (event) => event.id !== id
+        )
+      )
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
   return (
     <div className="space-y-6">
 
@@ -53,11 +85,13 @@ export default function EventsPage() {
         </p>
       </div>
 
+      {/* CREATE EVENT FORM */}
       <EventForm
         onSubmit={handleCreateEvent}
         loading={loading}
       />
 
+      {/* EVENTS LIST */}
       <div className="grid gap-4">
 
         {events.map((event) => (
@@ -67,6 +101,7 @@ export default function EventsPage() {
           >
             <div className="flex justify-between items-start">
 
+              {/* EVENT INFO */}
               <div>
                 <h2 className="text-lg font-semibold text-slate-800">
                   {event.clientName}
@@ -81,8 +116,47 @@ export default function EventsPage() {
                     event.eventDate
                   ).toLocaleString()}
                 </p>
+
+                {/* ACTION BUTTONS */}
+                <div className="flex gap-2 mt-3">
+
+                  <button
+                    onClick={() =>
+                      handleStatusUpdate(
+                        event.id,
+                        'CONFIRMED'
+                      )
+                    }
+                    className="text-xs px-3 py-1 bg-green-100 text-green-700 rounded hover:bg-green-200"
+                  >
+                    Confirm
+                  </button>
+
+                  <button
+                    onClick={() =>
+                      handleStatusUpdate(
+                        event.id,
+                        'COMPLETED'
+                      )
+                    }
+                    className="text-xs px-3 py-1 bg-blue-100 text-blue-700 rounded hover:bg-blue-200"
+                  >
+                    Complete
+                  </button>
+
+                  <button
+                    onClick={() =>
+                      handleDelete(event.id)
+                    }
+                    className="text-xs px-3 py-1 bg-red-100 text-red-700 rounded hover:bg-red-200"
+                  >
+                    Delete
+                  </button>
+
+                </div>
               </div>
 
+              {/* STATUS BADGE */}
               <span className="text-xs px-3 py-1 rounded-full bg-blue-100 text-blue-700">
                 {event.status}
               </span>
