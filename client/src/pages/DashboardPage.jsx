@@ -1,7 +1,42 @@
+import { useEffect, useState } from 'react'
+
 import DashboardCard from '../components/DashboardCard'
 import SectionCard from '../components/SectionCard'
 
+import {
+  fetchDashboardSummary,
+} from '../api/dashboard'
+
 export default function DashboardPage() {
+  const [summary, setSummary] = useState(null)
+
+  const [loading, setLoading] = useState(true)
+
+  async function loadDashboard() {
+    try {
+      const data =
+        await fetchDashboardSummary()
+
+      setSummary(data)
+    } catch (error) {
+      console.error(error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    loadDashboard()
+  }, [])
+
+  if (loading) {
+    return (
+      <div className="text-slate-500">
+        Loading dashboard...
+      </div>
+    )
+  }
+
   return (
     <div className="space-y-6">
 
@@ -20,83 +55,83 @@ export default function DashboardPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
 
         <DashboardCard
+          title="Total Events"
+          value={summary.totalEvents}
+          subtitle="All tracked bookings"
+        />
+
+        <DashboardCard
+          title="Inquiry Events"
+          value={summary.inquiryCount}
+          subtitle="Awaiting confirmation"
+        />
+
+        <DashboardCard
+          title="Confirmed Events"
+          value={summary.confirmedCount}
+          subtitle="Booked successfully"
+        />
+
+        <DashboardCard
           title="Upcoming Events"
-          value="12"
-          subtitle="3 scheduled this week"
-        />
-
-        <DashboardCard
-          title="Monthly Revenue"
-          value="$8,420"
-          subtitle="Current projected revenue"
-        />
-
-        <DashboardCard
-          title="Open Tabs"
-          value="5"
-          subtitle="Currently active"
-        />
-
-        <DashboardCard
-          title="Pending Payments"
-          value="$1,250"
-          subtitle="Awaiting deposits"
+          value={summary.upcomingEvents.length}
+          subtitle="Next scheduled bookings"
         />
 
       </div>
 
-      {/* Main Content Grid */}
+      {/* Main Grid */}
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
 
         {/* Upcoming Events */}
         <div className="xl:col-span-2">
+
           <SectionCard title="Upcoming Events">
 
             <div className="space-y-4">
 
-              <div className="border rounded-lg p-4">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <h3 className="font-semibold text-slate-800">
-                      Johnson Wedding
-                    </h3>
+              {summary.upcomingEvents.map(
+                (event) => (
+                  <div
+                    key={event.id}
+                    className="border rounded-lg p-4"
+                  >
+                    <div className="flex justify-between items-start">
 
-                    <p className="text-sm text-slate-500">
-                      May 28 • 180 Guests
-                    </p>
+                      <div>
+                        <h3 className="font-semibold text-slate-800">
+                          {event.clientName}
+                        </h3>
+
+                        <p className="text-sm text-slate-500">
+                          {event.venueName}
+                        </p>
+
+                        <p className="text-sm text-slate-400 mt-1">
+                          {new Date(
+                            event.eventDate
+                          ).toLocaleString()}
+                        </p>
+                      </div>
+
+                      <span className="text-sm bg-blue-100 text-blue-700 px-3 py-1 rounded-full">
+                        {event.status}
+                      </span>
+
+                    </div>
                   </div>
-
-                  <span className="text-sm bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full">
-                    Confirmed
-                  </span>
-                </div>
-              </div>
-
-              <div className="border rounded-lg p-4">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <h3 className="font-semibold text-slate-800">
-                      Corporate Mixer
-                    </h3>
-
-                    <p className="text-sm text-slate-500">
-                      June 2 • 90 Guests
-                    </p>
-                  </div>
-
-                  <span className="text-sm bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full">
-                    Deposit Pending
-                  </span>
-                </div>
-              </div>
+                )
+              )}
 
             </div>
 
           </SectionCard>
+
         </div>
 
         {/* Quick Actions */}
         <div>
+
           <SectionCard title="Quick Actions">
 
             <div className="space-y-3">
@@ -116,6 +151,7 @@ export default function DashboardPage() {
             </div>
 
           </SectionCard>
+
         </div>
 
       </div>
