@@ -1,5 +1,9 @@
 import { useEffect, useState } from 'react'
 
+import {
+  useNavigate,
+} from 'react-router-dom'
+
 import EventForm from '../components/EventForm'
 
 import {
@@ -10,6 +14,8 @@ import {
 } from '../api/events'
 
 export default function EventsPage() {
+  const navigate = useNavigate()
+
   const [events, setEvents] = useState([])
 
   const [loading, setLoading] = useState(false)
@@ -17,6 +23,7 @@ export default function EventsPage() {
   async function loadEvents() {
     try {
       const data = await fetchEvents()
+
       setEvents(data)
     } catch (error) {
       console.error(error)
@@ -43,14 +50,17 @@ export default function EventsPage() {
 
   async function handleStatusUpdate(id, status) {
     try {
-      const updated = await updateEventStatus(
-        id,
-        status
-      )
+      const updated =
+        await updateEventStatus(
+          id,
+          status
+        )
 
       setEvents((prev) =>
         prev.map((event) =>
-          event.id === id ? updated : event
+          event.id === id
+            ? updated
+            : event
         )
       )
     } catch (error) {
@@ -75,6 +85,7 @@ export default function EventsPage() {
   return (
     <div className="space-y-6">
 
+      {/* PAGE HEADER */}
       <div>
         <h1 className="text-3xl font-bold text-slate-800">
           Events
@@ -97,7 +108,12 @@ export default function EventsPage() {
         {events.map((event) => (
           <div
             key={event.id}
-            className="bg-white border rounded-xl p-5 shadow-sm"
+            onClick={() =>
+              navigate(
+                `/events/${event.id}`
+              )
+            }
+            className="bg-white border rounded-xl p-5 shadow-sm cursor-pointer hover:border-slate-400 transition"
           >
             <div className="flex justify-between items-start">
 
@@ -121,33 +137,39 @@ export default function EventsPage() {
                 <div className="flex gap-2 mt-3">
 
                   <button
-                    onClick={() =>
+                    onClick={(e) => {
+                      e.stopPropagation()
+
                       handleStatusUpdate(
                         event.id,
                         'CONFIRMED'
                       )
-                    }
+                    }}
                     className="text-xs px-3 py-1 bg-green-100 text-green-700 rounded hover:bg-green-200"
                   >
                     Confirm
                   </button>
 
                   <button
-                    onClick={() =>
+                    onClick={(e) => {
+                      e.stopPropagation()
+
                       handleStatusUpdate(
                         event.id,
                         'COMPLETED'
                       )
-                    }
+                    }}
                     className="text-xs px-3 py-1 bg-blue-100 text-blue-700 rounded hover:bg-blue-200"
                   >
                     Complete
                   </button>
 
                   <button
-                    onClick={() =>
+                    onClick={(e) => {
+                      e.stopPropagation()
+
                       handleDelete(event.id)
-                    }
+                    }}
                     className="text-xs px-3 py-1 bg-red-100 text-red-700 rounded hover:bg-red-200"
                   >
                     Delete

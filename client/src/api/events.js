@@ -31,3 +31,11 @@ export async function deleteEvent(id) {
 
   return response.data
 }
+
+export async function fetchEventById(id) {
+  const response = await api.get(
+    `/api/events/${id}`
+  )
+
+  return response.data.event
+}

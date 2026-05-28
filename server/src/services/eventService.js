@@ -49,3 +49,11 @@ export async function deleteEvent(eventId) {
     },
   })
 }
+
+export async function getEventById(id) {
+  return prisma.event.findUnique({
+    where: {
+      id,
+    },
+  })
+}

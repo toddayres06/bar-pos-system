@@ -4,6 +4,7 @@ import {
   createEventHandler,
   getEventsHandler,
   updateEventStatusHandler,
+  getEventByIdHandler,
   deleteEventHandler,
 } from '../controllers/eventController.js'
 
@@ -14,6 +15,12 @@ const router = express.Router()
 router.post('/', protect, createEventHandler)
 
 router.get('/', protect, getEventsHandler)
+
+router.get(
+  '/:id',
+  protect,
+  getEventByIdHandler
+)
 
 router.patch(
   '/:id/status',

@@ -10,6 +10,7 @@ import PackagesPage from './pages/PackagesPage'
 import TabsPage from './pages/TabsPage'
 import PaymentsPage from './pages/PaymentsPage'
 import LoginPage from './pages/LoginPage'
+import EventDetailPage from './pages/EventDetailPage'
 
 function App() {
   return (
@@ -28,6 +29,10 @@ function App() {
       >
         <Route path="/" element={<DashboardPage />} />
         <Route path="/events" element={<EventsPage />} />
+        <Route
+            path="/events/:id"
+            element={<EventDetailPage />}
+        />
         <Route path="/packages" element={<PackagesPage />} />
         <Route path="/tabs" element={<TabsPage />} />
         <Route path="/payments" element={<PaymentsPage />} />

@@ -2,6 +2,7 @@ import {
   createEvent,
   getAllEvents,
   updateEventStatus,
+  getEventById,
   deleteEvent
 } from '../services/eventService.js'
 
@@ -89,6 +90,36 @@ export async function deleteEventHandler(
     res.status(500).json({
       success: false,
       message: 'Failed to delete event',
+    })
+  }
+}
+
+export async function getEventByIdHandler(
+  req,
+  res
+) {
+  try {
+    const event = await getEventById(
+      req.params.id
+    )
+
+    if (!event) {
+      return res.status(404).json({
+        success: false,
+        message: 'Event not found',
+      })
+    }
+
+    return res.status(200).json({
+      success: true,
+      event,
+    })
+  } catch (error) {
+    console.error(error)
+
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to fetch event',
     })
   }
 }
