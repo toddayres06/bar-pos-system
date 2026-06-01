@@ -45,6 +45,37 @@ async function main() {
   console.log('Seed completed successfully')
 }
 
+const packages = [
+  {
+    name: 'Silver Package',
+    description:
+      'Basic bartending service package',
+    price: 1200,
+  },
+  {
+    name: 'Gold Package',
+    description:
+      'Enhanced event bartending experience',
+    price: 2500,
+  },
+  {
+    name: 'Platinum Package',
+    description:
+      'Luxury full-service cocktail experience',
+    price: 4000,
+  },
+]
+
+for (const pkg of packages) {
+  await prisma.package.upsert({
+    where: {
+      name: pkg.name,
+    },
+    update: {},
+    create: pkg,
+  })
+}
+
 main()
   .catch((error) => {
     console.error(error)

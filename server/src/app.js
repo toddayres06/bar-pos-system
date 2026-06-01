@@ -7,6 +7,7 @@ import userRoutes from './routes/userRoutes.js'
 import authRoutes from './routes/authRoutes.js'
 import protectedRoutes from './routes/protectedRoutes.js'
 import dashboardRoutes from './routes/dashboardRoutes.js'
+import packageRoutes from './routes/packageRoutes.js'
 
 const app = express()
 
@@ -29,5 +30,7 @@ app.use('/api/dashboard', dashboardRoutes)
 app.use('/api/auth', authRoutes)
 
 app.use('/api/protected', protectedRoutes)
+
+app.use('/api/packages', packageRoutes)
 
 export default app

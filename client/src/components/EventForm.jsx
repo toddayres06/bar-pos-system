@@ -1,4 +1,6 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+
+import { fetchPackages } from '../api/packages'
 
 export default function EventForm({
   onSubmit,
@@ -13,7 +15,29 @@ export default function EventForm({
     venueAddress: '',
     guestCount: '',
     notes: '',
+    packageId: '',
   })
+
+  const [packages, setPackages] = useState([])
+
+  useEffect(() => {
+    async function loadPackages() {
+      try {
+        const data = await fetchPackages()
+
+        // IMPORTANT: only allow active packages in event creation flow
+        const activePackages = data.filter(
+          (pkg) => pkg.isActive
+        )
+
+        setPackages(activePackages)
+      } catch (error) {
+        console.error(error)
+      }
+    }
+
+    loadPackages()
+  }, [])
 
   function handleChange(event) {
     setFormData({
@@ -26,15 +50,15 @@ export default function EventForm({
     event.preventDefault()
 
     await onSubmit({
-        ...formData,
+      ...formData,
 
-        eventDate: new Date(
-            formData.eventDate
-        ).toISOString(),
+      eventDate: new Date(
+        formData.eventDate
+      ).toISOString(),
 
-        guestCount: Number(formData.guestCount),
-        })
-        
+      guestCount: Number(formData.guestCount),
+    })
+
     setFormData({
       clientName: '',
       clientEmail: '',
@@ -44,6 +68,7 @@ export default function EventForm({
       venueAddress: '',
       guestCount: '',
       notes: '',
+      packageId: '',
     })
   }
 
@@ -123,6 +148,29 @@ export default function EventForm({
         className="w-full border rounded-lg px-3 py-2"
         required
       />
+
+      <div>
+        <label className="block text-sm font-medium text-slate-700 mb-1">
+          Package
+        </label>
+
+        <select
+          name="packageId"
+          value={formData.packageId}
+          onChange={handleChange}
+          className="w-full border rounded-lg px-3 py-2"
+        >
+          <option value="">
+            Select Package
+          </option>
+
+          {packages.map((pkg) => (
+            <option key={pkg.id} value={pkg.id}>
+              {pkg.name} — ${pkg.price}
+            </option>
+          ))}
+        </select>
+      </div>
 
       <textarea
         name="notes"

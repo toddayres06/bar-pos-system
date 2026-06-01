@@ -39,3 +39,15 @@ export async function fetchEventById(id) {
 
   return response.data.event
 }
+
+export async function updateEvent(
+  id,
+  eventData
+) {
+  const response = await api.patch(
+    `/api/events/${id}`,
+    eventData
+  )
+
+  return response.data.event
+}

@@ -4,6 +4,7 @@ import {
   createEventHandler,
   getEventsHandler,
   updateEventStatusHandler,
+  updateEventHandler,
   getEventByIdHandler,
   deleteEventHandler,
 } from '../controllers/eventController.js'
@@ -20,6 +21,12 @@ router.get(
   '/:id',
   protect,
   getEventByIdHandler
+)
+
+router.patch(
+  '/:id',
+  protect,
+  updateEventHandler
 )
 
 router.patch(

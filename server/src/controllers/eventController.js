@@ -3,7 +3,8 @@ import {
   getAllEvents,
   updateEventStatus,
   getEventById,
-  deleteEvent
+  deleteEvent,
+  updateEvent,
 } from '../services/eventService.js'
 
 export async function createEventHandler(req, res) {
@@ -65,6 +66,31 @@ export async function updateEventStatusHandler(
     console.error(error)
 
     res.status(500).json({
+      success: false,
+      message: 'Failed to update event',
+    })
+  }
+}
+
+export async function updateEventHandler(
+  req,
+  res
+) {
+  try {
+    const updatedEvent =
+      await updateEvent(
+        req.params.id,
+        req.body
+      )
+
+    return res.status(200).json({
+      success: true,
+      event: updatedEvent,
+    })
+  } catch (error) {
+    console.error(error)
+
+    return res.status(500).json({
       success: false,
       message: 'Failed to update event',
     })
