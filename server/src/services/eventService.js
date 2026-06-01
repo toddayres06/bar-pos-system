@@ -1,6 +1,6 @@
 import prisma from '../config/prisma.js'
 
-export async function createEvent(data) {
+export async function createEvent(data, userId) {
   return prisma.event.create({
     data: {
       clientName: data.clientName,
@@ -16,7 +16,7 @@ export async function createEvent(data) {
 
       notes: data.notes,
 
-      createdById: data.createdById,
+      createdById: userId,
 
       packageId: data.packageId || null,
     },

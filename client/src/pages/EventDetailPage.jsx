@@ -4,6 +4,7 @@ import { useParams } from 'react-router-dom'
 import {
   fetchEventById,
   updateEvent,
+  updateEventStatus,
 } from '../api/events'
 
 import { fetchPackages } from '../api/packages'
@@ -42,10 +43,9 @@ export default function EventDetailPage() {
           clientName: eventData.clientName || '',
           clientEmail: eventData.clientEmail || '',
           clientPhone: eventData.clientPhone || '',
-          eventDate:
-            eventData.eventDate
-              ? eventData.eventDate.slice(0, 16)
-              : '',
+          eventDate: eventData.eventDate
+            ? eventData.eventDate.slice(0, 16)
+            : '',
           venueName: eventData.venueName || '',
           venueAddress: eventData.venueAddress || '',
           guestCount: eventData.guestCount || '',
@@ -84,6 +84,16 @@ export default function EventDetailPage() {
     }
   }
 
+  async function handleStatusUpdate(status) {
+    try {
+      const updated = await updateEventStatus(id, status)
+
+      setEvent(updated)
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
   if (loading) {
     return (
       <p className="text-slate-500">Loading event...</p>
@@ -115,6 +125,32 @@ export default function EventDetailPage() {
         >
           {editing ? 'Cancel Edit' : 'Edit Event'}
         </button>
+
+        {/* STATUS ACTIONS */}
+        {!editing && (
+          <div className="flex gap-2 mt-4">
+            <button
+              onClick={() => handleStatusUpdate('CONFIRMED')}
+              className="px-3 py-1 text-sm bg-green-600 text-white rounded"
+            >
+              Confirm
+            </button>
+
+            <button
+              onClick={() => handleStatusUpdate('COMPLETED')}
+              className="px-3 py-1 text-sm bg-blue-600 text-white rounded"
+            >
+              Complete
+            </button>
+
+            <button
+              onClick={() => handleStatusUpdate('CANCELLED')}
+              className="px-3 py-1 text-sm bg-red-600 text-white rounded"
+            >
+              Cancel
+            </button>
+          </div>
+        )}
       </div>
 
       {/* VIEW MODE */}
