@@ -2,6 +2,9 @@ import prisma from '../config/prisma.js'
 
 export async function getPackages() {
   return prisma.package.findMany({
+    where: {
+      isArchived: false,
+    },
     orderBy: {
       createdAt: 'desc',
     },

@@ -77,6 +77,8 @@ model Package {
   price          Float
 
   isActive       Boolean @default(true)
+  isArchived     Boolean @default(false)
+
 
   events         Event[]
 
