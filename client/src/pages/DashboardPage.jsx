@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 import DashboardCard from '../components/DashboardCard'
 import SectionCard from '../components/SectionCard'
@@ -11,6 +12,8 @@ export default function DashboardPage() {
   const [summary, setSummary] = useState(null)
 
   const [loading, setLoading] = useState(true)
+
+  const navigate = useNavigate()
 
   async function loadDashboard() {
     try {
@@ -144,7 +147,10 @@ if (!summary) {
 
             <div className="space-y-3">
 
-              <button className="w-full bg-slate-900 hover:bg-slate-800 text-white rounded-lg py-3 text-sm font-medium transition">
+              <button
+                onClick={() => navigate('/events')}
+                className="w-full bg-slate-900 hover:bg-slate-800 text-white rounded-lg py-3 text-sm font-medium transition"
+              >
                 Create Event
               </button>
 
@@ -152,10 +158,12 @@ if (!summary) {
                 Open Drink Tab
               </button>
 
-              <button className="w-full border border-slate-300 hover:bg-slate-100 rounded-lg py-3 text-sm font-medium transition">
+              <button
+                onClick={() => navigate('/packages')}
+                className="w-full border border-slate-300 hover:bg-slate-100 rounded-lg py-3 text-sm font-medium transition"
+              >
                 Create Package
               </button>
-
             </div>
 
           </SectionCard>
