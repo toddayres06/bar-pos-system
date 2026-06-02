@@ -30,12 +30,20 @@ export default function DashboardPage() {
   }, [])
 
   if (loading) {
-    return (
-      <div className="text-slate-500">
-        Loading dashboard...
-      </div>
-    )
-  }
+  return (
+    <div className="text-slate-500">
+      Loading dashboard...
+    </div>
+  )
+}
+
+if (!summary) {
+  return (
+    <div className="text-red-500">
+      Failed to load dashboard.
+    </div>
+  )
+}
 
   return (
     <div className="space-y-6">
