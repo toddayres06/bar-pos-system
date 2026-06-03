@@ -1,7 +1,14 @@
 import api from './axios'
 
-export async function fetchEvents() {
-  const response = await api.get('/api/events')
+export async function fetchEvents(
+  showArchived = false
+) {
+  const response =
+    await api.get('/api/events', {
+      params: {
+        archived: showArchived,
+      },
+    })
 
   return response.data.events
 }
@@ -49,5 +56,10 @@ export async function updateEvent(
     eventData
   )
 
+  return response.data.event
+}
+
+export async function archiveEvent(id) {
+  const response = await api.patch(`/api/events/${id}/archive`)
   return response.data.event
 }

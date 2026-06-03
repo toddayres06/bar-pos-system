@@ -1,8 +1,5 @@
 import { useEffect, useState } from 'react'
-
-import {
-  useNavigate,
-} from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 import EventForm from '../components/EventForm'
 
@@ -10,37 +7,39 @@ import {
   fetchEvents,
   createEvent,
   updateEventStatus,
-  deleteEvent,
 } from '../api/events'
 
 export default function EventsPage() {
   const navigate = useNavigate()
 
   const [events, setEvents] = useState([])
-
   const [loading, setLoading] = useState(false)
+  const [showArchived, setShowArchived] = useState(false)
 
+  // 🔁 Unified loader (always source of truth)
   async function loadEvents() {
     try {
-      const data = await fetchEvents()
-
+      const data = await fetchEvents(showArchived)
       setEvents(data)
     } catch (error) {
       console.error(error)
     }
   }
 
+  // 🔁 Refetch whenever toggle changes
   useEffect(() => {
     loadEvents()
-  }, [])
+  }, [showArchived])
 
+  // ➕ Create event (always refetch to avoid stale state issues)
   async function handleCreateEvent(formData) {
     try {
       setLoading(true)
 
-      const newEvent = await createEvent(formData)
+      await createEvent(formData)
 
-      setEvents((prev) => [newEvent, ...prev])
+      // ensure UI stays consistent with backend filter state
+      await loadEvents()
     } catch (error) {
       console.error(error)
     } finally {
@@ -48,33 +47,14 @@ export default function EventsPage() {
     }
   }
 
+  // 🔄 Status update (optimistic local update)
   async function handleStatusUpdate(id, status) {
     try {
-      const updated =
-        await updateEventStatus(
-          id,
-          status
-        )
+      const updated = await updateEventStatus(id, status)
 
       setEvents((prev) =>
         prev.map((event) =>
-          event.id === id
-            ? updated
-            : event
-        )
-      )
-    } catch (error) {
-      console.error(error)
-    }
-  }
-
-  async function handleDelete(id) {
-    try {
-      await deleteEvent(id)
-
-      setEvents((prev) =>
-        prev.filter(
-          (event) => event.id !== id
+          event.id === id ? updated : event
         )
       )
     } catch (error) {
@@ -85,40 +65,64 @@ export default function EventsPage() {
   return (
     <div className="space-y-6">
 
-      {/* PAGE HEADER */}
-      <div>
-        <h1 className="text-3xl font-bold text-slate-800">
-          Events
-        </h1>
+      {/* HEADER */}
+      <div className="flex justify-between items-center">
 
-        <p className="text-slate-500 mt-1">
-          Manage upcoming bookings and event details.
-        </p>
+        <div>
+          <h1 className="text-3xl font-bold text-slate-800">
+            Events
+          </h1>
+
+          <p className="text-slate-500 mt-1">
+            Manage upcoming bookings and event details.
+          </p>
+        </div>
+
+        {/* TOGGLE VIEW */}
+        <button
+          onClick={() => setShowArchived((prev) => !prev)}
+          className="px-4 py-2 border rounded-lg hover:bg-slate-100 transition"
+        >
+          {showArchived
+            ? 'Show Active Events'
+            : 'Show Archived Events'}
+        </button>
+
       </div>
 
-      {/* CREATE EVENT FORM */}
-      <EventForm
-        onSubmit={handleCreateEvent}
-        loading={loading}
-      />
+      {/* CREATE FORM (hidden in archive view) */}
+      {!showArchived && (
+        <EventForm
+          onSubmit={handleCreateEvent}
+          loading={loading}
+        />
+      )}
 
       {/* EVENTS LIST */}
       <div className="grid gap-4">
 
+        {/* EMPTY STATE */}
+        {events.length === 0 && (
+          <div className="bg-white border rounded-xl p-6 text-slate-500">
+            {showArchived
+              ? 'No archived events found.'
+              : 'No active events found.'}
+          </div>
+        )}
+
+        {/* EVENT CARDS */}
         {events.map((event) => (
           <div
             key={event.id}
-            onClick={() =>
-              navigate(
-                `/events/${event.id}`
-              )
-            }
+            onClick={() => navigate(`/events/${event.id}`)}
             className="bg-white border rounded-xl p-5 shadow-sm cursor-pointer hover:border-slate-400 transition"
           >
+
             <div className="flex justify-between items-start">
 
-              {/* EVENT INFO */}
+              {/* LEFT SIDE */}
               <div>
+
                 <h2 className="text-lg font-semibold text-slate-800">
                   {event.clientName}
                 </h2>
@@ -128,54 +132,36 @@ export default function EventsPage() {
                 </p>
 
                 <p className="text-sm text-slate-400 mt-1">
-                  {new Date(
-                    event.eventDate
-                  ).toLocaleString()}
+                  {new Date(event.eventDate).toLocaleString()}
                 </p>
 
-                {/* ACTION BUTTONS */}
-                <div className="flex gap-2 mt-3">
+                {/* ACTIONS ONLY FOR ACTIVE VIEW */}
+                {!showArchived && (
+                  <div className="flex gap-2 mt-3">
 
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation()
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        handleStatusUpdate(event.id, 'CONFIRMED')
+                      }}
+                      className="text-xs px-3 py-1 bg-green-100 text-green-700 rounded hover:bg-green-200"
+                    >
+                      Confirm
+                    </button>
 
-                      handleStatusUpdate(
-                        event.id,
-                        'CONFIRMED'
-                      )
-                    }}
-                    className="text-xs px-3 py-1 bg-green-100 text-green-700 rounded hover:bg-green-200"
-                  >
-                    Confirm
-                  </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        handleStatusUpdate(event.id, 'COMPLETED')
+                      }}
+                      className="text-xs px-3 py-1 bg-blue-100 text-blue-700 rounded hover:bg-blue-200"
+                    >
+                      Complete
+                    </button>
 
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation()
+                  </div>
+                )}
 
-                      handleStatusUpdate(
-                        event.id,
-                        'COMPLETED'
-                      )
-                    }}
-                    className="text-xs px-3 py-1 bg-blue-100 text-blue-700 rounded hover:bg-blue-200"
-                  >
-                    Complete
-                  </button>
-
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation()
-
-                      handleDelete(event.id)
-                    }}
-                    className="text-xs px-3 py-1 bg-red-100 text-red-700 rounded hover:bg-red-200"
-                  >
-                    Delete
-                  </button>
-
-                </div>
               </div>
 
               {/* STATUS BADGE */}
@@ -184,6 +170,7 @@ export default function EventsPage() {
               </span>
 
             </div>
+
           </div>
         ))}
 

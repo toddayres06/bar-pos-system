@@ -27,8 +27,12 @@ export async function createEvent(data, userId) {
   })
 }
 
-export async function getAllEvents() {
+export async function getAllEvents(showArchived = false) {
   return prisma.event.findMany({
+    where: {
+      isArchived: showArchived === 'true',
+    },
+
     include: {
       package: true,
 
@@ -111,6 +115,18 @@ export async function updateEvent(
 
     include: {
       package: true,
+    },
+  })
+}
+
+export async function archiveEvent(eventId) {
+  return prisma.event.update({
+    where: {
+      id: eventId,
+    },
+
+    data: {
+      isArchived: true,
     },
   })
 }

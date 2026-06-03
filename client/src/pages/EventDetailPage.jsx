@@ -1,16 +1,18 @@
 import { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 
 import {
   fetchEventById,
   updateEvent,
   updateEventStatus,
+  archiveEvent,
 } from '../api/events'
 
 import { fetchPackages } from '../api/packages'
 
 export default function EventDetailPage() {
   const { id } = useParams()
+  const navigate = useNavigate()
 
   const [event, setEvent] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -69,6 +71,16 @@ export default function EventDetailPage() {
     })
   }
 
+  // ✅ ARCHIVE (soft delete)
+  async function handleArchive() {
+    try {
+      await archiveEvent(id)
+      navigate('/events')
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
   async function handleSave() {
     try {
       const updated = await updateEvent(id, {
@@ -87,7 +99,6 @@ export default function EventDetailPage() {
   async function handleStatusUpdate(status) {
     try {
       const updated = await updateEventStatus(id, status)
-
       setEvent(updated)
     } catch (error) {
       console.error(error)
@@ -95,15 +106,11 @@ export default function EventDetailPage() {
   }
 
   if (loading) {
-    return (
-      <p className="text-slate-500">Loading event...</p>
-    )
+    return <p className="text-slate-500">Loading event...</p>
   }
 
   if (!event) {
-    return (
-      <p className="text-red-500">Event not found</p>
-    )
+    return <p className="text-red-500">Event not found</p>
   }
 
   return (
@@ -148,6 +155,14 @@ export default function EventDetailPage() {
               className="px-3 py-1 text-sm bg-red-600 text-white rounded"
             >
               Cancel
+            </button>
+
+            {/* ✅ ARCHIVE BUTTON */}
+            <button
+              onClick={handleArchive}
+              className="px-3 py-1 text-sm bg-slate-700 text-white rounded hover:bg-slate-800"
+            >
+              Archive
             </button>
           </div>
         )}

@@ -5,6 +5,7 @@ import {
   getEventById,
   deleteEvent,
   updateEvent,
+  archiveEvent,
 } from '../services/eventService.js'
 
 export async function createEventHandler(req, res) {
@@ -30,7 +31,9 @@ export async function createEventHandler(req, res) {
 
 export async function getEventsHandler(req, res) {
   try {
-    const events = await getAllEvents()
+    const { archived } = req.query
+
+    const events = await getAllEvents(archived)
 
     return res.json({
       success: true,
@@ -146,6 +149,26 @@ export async function getEventByIdHandler(
     return res.status(500).json({
       success: false,
       message: 'Failed to fetch event',
+    })
+  }
+}
+
+export async function archiveEventHandler(req, res) {
+  try {
+    const { id } = req.params
+
+    const event = await archiveEvent(id)
+
+    return res.status(200).json({
+      success: true,
+      event,
+    })
+  } catch (error) {
+    console.error(error)
+
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to archive event',
     })
   }
 }
