@@ -5,6 +5,7 @@ import {
   createPackageHandler,
   updatePackageHandler,
   togglePackageStatusHandler,
+  archivePackageHandler,
 } from '../controllers/packageController.js'
 
 import { protect } from '../middleware/authMiddleware.js'
@@ -34,5 +35,7 @@ router.patch(
   protect,
   togglePackageStatusHandler
 )
+
+router.patch('/:id/archive', protect, archivePackageHandler)
 
 export default router

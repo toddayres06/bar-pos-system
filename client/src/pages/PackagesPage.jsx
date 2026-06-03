@@ -1,7 +1,4 @@
-import {
-  useEffect,
-  useState,
-} from 'react'
+import { useEffect, useState } from 'react'
 
 import PackageForm from '../components/PackageForm'
 
@@ -9,20 +6,16 @@ import {
   fetchPackages,
   createPackage,
   togglePackageStatus,
+  archivePackage,
 } from '../api/packages'
 
 export default function PackagesPage() {
-  const [packages, setPackages] =
-    useState([])
-
-  const [loading, setLoading] =
-    useState(false)
+  const [packages, setPackages] = useState([])
+  const [loading, setLoading] = useState(false)
 
   async function loadPackages() {
     try {
-      const data =
-        await fetchPackages()
-
+      const data = await fetchPackages()
       setPackages(data)
     } catch (error) {
       console.error(error)
@@ -33,14 +26,11 @@ export default function PackagesPage() {
     loadPackages()
   }, [])
 
-  async function handleCreatePackage(
-    formData
-  ) {
+  async function handleCreatePackage(formData) {
     try {
       setLoading(true)
 
-      const newPackage =
-        await createPackage(formData)
+      const newPackage = await createPackage(formData)
 
       setPackages((prev) => [
         newPackage,
@@ -53,28 +43,34 @@ export default function PackagesPage() {
     }
   }
 
-  async function handleToggleStatus(
-  id,
-  currentStatus
-) {
-  try {
-    const updatedPackage =
-      await togglePackageStatus(
+  async function handleToggleStatus(id, currentStatus) {
+    try {
+      const updatedPackage = await togglePackageStatus(
         id,
         !currentStatus
       )
 
-    setPackages((prev) =>
-      prev.map((pkg) =>
-        pkg.id === id
-          ? updatedPackage
-          : pkg
+      setPackages((prev) =>
+        prev.map((pkg) =>
+          pkg.id === id ? updatedPackage : pkg
+        )
       )
-    )
-  } catch (error) {
-    console.error(error)
+    } catch (error) {
+      console.error(error)
+    }
   }
-}
+
+  async function handleArchive(id) {
+    try {
+      await archivePackage(id)
+
+      setPackages((prev) =>
+        prev.filter((pkg) => pkg.id !== id)
+      )
+    } catch (error) {
+      console.error(error)
+    }
+  }
 
   return (
     <div className="space-y-6">
@@ -86,8 +82,7 @@ export default function PackagesPage() {
         </h1>
 
         <p className="text-slate-500 mt-1">
-          Manage pricing tiers and
-          service offerings.
+          Manage pricing tiers and service offerings.
         </p>
       </div>
 
@@ -105,7 +100,6 @@ export default function PackagesPage() {
             key={pkg.id}
             className="bg-white border rounded-xl p-5 shadow-sm"
           >
-
             <div className="flex justify-between items-start">
 
               <div>
@@ -116,25 +110,29 @@ export default function PackagesPage() {
                 <p className="text-slate-500 mt-1">
                   {pkg.description}
                 </p>
+
+                {/* ARCHIVE BUTTON */}
+                <button
+                  onClick={() => handleArchive(pkg.id)}
+                  className="mt-3 text-xs px-3 py-1 bg-gray-100 text-gray-700 rounded hover:bg-gray-200"
+                >
+                  Archive
+                </button>
               </div>
 
               <div className="text-right">
+
                 <p className="text-2xl font-bold text-slate-800">
-                  $
-                  {pkg.price.toLocaleString()}
+                  ${pkg.price.toLocaleString()}
                 </p>
 
                 <p className="text-xs text-slate-400 mt-1">
-                  {pkg.isActive
-                    ? 'Active'
-                    : 'Inactive'}
+                  {pkg.isActive ? 'Active' : 'Inactive'}
                 </p>
+
                 <button
                   onClick={() =>
-                    handleToggleStatus(
-                      pkg.id,
-                      pkg.isActive
-                    )
+                    handleToggleStatus(pkg.id, pkg.isActive)
                   }
                   className={`mt-3 text-xs px-3 py-1 rounded transition ${
                     pkg.isActive
@@ -142,19 +140,16 @@ export default function PackagesPage() {
                       : 'bg-green-100 text-green-700 hover:bg-green-200'
                   }`}
                 >
-                  {pkg.isActive
-                    ? 'Deactivate'
-                    : 'Activate'}
+                  {pkg.isActive ? 'Deactivate' : 'Activate'}
                 </button>
+
               </div>
 
             </div>
-
           </div>
         ))}
 
       </div>
-
     </div>
   )
 }

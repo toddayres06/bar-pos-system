@@ -67,7 +67,7 @@ if (!summary) {
 
         <DashboardCard
           title="Total Events"
-          value={summary.totalEvents}
+          value={summary.totalEvents || 0}
           subtitle="All tracked bookings"
         />
 
@@ -85,7 +85,7 @@ if (!summary) {
 
         <DashboardCard
           title="Upcoming Events"
-          value={summary.upcomingEvents.length}
+          value={summary?.upcomingEvents?.length || 0}
           subtitle="Next scheduled bookings"
         />
 

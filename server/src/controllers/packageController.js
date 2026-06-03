@@ -3,6 +3,7 @@ import {
   createPackage,
   updatePackage,
   togglePackageStatus,
+  archivePackage,
 } from '../services/packageService.js'
 
 export async function getPackagesHandler(
@@ -96,6 +97,24 @@ export async function togglePackageStatusHandler(
       success: false,
       message:
         'Failed to update package status',
+    })
+  }
+}
+
+export async function archivePackageHandler(req, res) {
+  try {
+    const pkg = await archivePackage(req.params.id)
+
+    res.status(200).json({
+      success: true,
+      package: pkg,
+    })
+  } catch (error) {
+    console.error(error)
+
+    res.status(500).json({
+      success: false,
+      message: 'Failed to archive package',
     })
   }
 }

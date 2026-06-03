@@ -42,3 +42,13 @@ export async function togglePackageStatus(
     },
   })
 }
+
+export async function archivePackage(id) {
+  return prisma.package.update({
+    where: { id },
+    data: {
+      isArchived: true,
+      isActive: false,
+    },
+  })
+}

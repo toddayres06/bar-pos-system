@@ -30,3 +30,11 @@ export async function togglePackageStatus(
 
   return response.data.package
 }
+
+export async function archivePackage(id) {
+  const response = await api.patch(
+    `/api/packages/${id}/archive`
+  )
+
+  return response.data.package
+}
