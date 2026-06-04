@@ -7,6 +7,7 @@ import {
   fetchEvents,
   createEvent,
   updateEventStatus,
+  restoreEvent,
 } from '../api/events'
 
 export default function EventsPage() {
@@ -61,6 +62,16 @@ export default function EventsPage() {
       console.error(error)
     }
   }
+
+  async function handleRestore(id) {
+  try {
+    await restoreEvent(id)
+
+    await loadEvents()
+  } catch (error) {
+    console.error(error)
+  }
+}
 
   return (
     <div className="space-y-6">
@@ -136,31 +147,49 @@ export default function EventsPage() {
                 </p>
 
                 {/* ACTIONS ONLY FOR ACTIVE VIEW */}
-                {!showArchived && (
-                  <div className="flex gap-2 mt-3">
+                <div className="flex gap-2 mt-3">
 
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        handleStatusUpdate(event.id, 'CONFIRMED')
-                      }}
-                      className="text-xs px-3 py-1 bg-green-100 text-green-700 rounded hover:bg-green-200"
-                    >
-                      Confirm
-                    </button>
+          {!showArchived ? (
+            <>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation()
+                  handleStatusUpdate(
+                    event.id,
+                    'CONFIRMED'
+                  )
+                }}
+                className="text-xs px-3 py-1 bg-green-100 text-green-700 rounded hover:bg-green-200"
+              >
+                Confirm
+              </button>
 
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        handleStatusUpdate(event.id, 'COMPLETED')
-                      }}
-                      className="text-xs px-3 py-1 bg-blue-100 text-blue-700 rounded hover:bg-blue-200"
-                    >
-                      Complete
-                    </button>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation()
+                  handleStatusUpdate(
+                    event.id,
+                    'COMPLETED'
+                  )
+                }}
+                className="text-xs px-3 py-1 bg-blue-100 text-blue-700 rounded hover:bg-blue-200"
+              >
+                Complete
+              </button>
+            </>
+          ) : (
+            <button
+              onClick={(e) => {
+                e.stopPropagation()
+                handleRestore(event.id)
+              }}
+              className="text-xs px-3 py-1 bg-green-100 text-green-700 rounded hover:bg-green-200"
+            >
+              Restore
+            </button>
+          )}
 
-                  </div>
-                )}
+        </div>
 
               </div>
 

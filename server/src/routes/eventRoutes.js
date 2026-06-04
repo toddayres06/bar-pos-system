@@ -8,6 +8,7 @@ import {
   getEventByIdHandler,
   deleteEventHandler,
   archiveEventHandler,
+  restoreEventHandler,
 } from '../controllers/eventController.js'
 
 import { protect } from '../middleware/authMiddleware.js'
@@ -40,6 +41,12 @@ router.patch(
   '/:id/archive',
    protect,
    archiveEventHandler
+)
+
+router.patch(
+  '/:id/restore',
+  protect,
+  restoreEventHandler
 )
 
 router.delete(

@@ -63,3 +63,12 @@ export async function archiveEvent(id) {
   const response = await api.patch(`/api/events/${id}/archive`)
   return response.data.event
 }
+
+export async function restoreEvent(id) {
+  const response =
+    await api.patch(
+      `/api/events/${id}/restore`
+    )
+
+  return response.data.event
+}

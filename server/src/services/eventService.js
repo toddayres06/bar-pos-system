@@ -119,14 +119,17 @@ export async function updateEvent(
   })
 }
 
-export async function archiveEvent(eventId) {
+export async function setEventArchived(
+  eventId,
+  isArchived
+) {
   return prisma.event.update({
     where: {
       id: eventId,
     },
 
     data: {
-      isArchived: true,
+      isArchived,
     },
   })
 }

@@ -5,7 +5,7 @@ import {
   getEventById,
   deleteEvent,
   updateEvent,
-  archiveEvent,
+  setEventArchived,
 } from '../services/eventService.js'
 
 export async function createEventHandler(req, res) {
@@ -157,7 +157,11 @@ export async function archiveEventHandler(req, res) {
   try {
     const { id } = req.params
 
-    const event = await archiveEvent(id)
+    const event =
+      await setEventArchived(
+        id,
+        true
+      )
 
     return res.status(200).json({
       success: true,
@@ -169,6 +173,33 @@ export async function archiveEventHandler(req, res) {
     return res.status(500).json({
       success: false,
       message: 'Failed to archive event',
+    })
+  }
+}
+
+export async function restoreEventHandler(
+  req,
+  res
+) {
+  try {
+    const { id } = req.params
+
+    const event =
+      await setEventArchived(
+        id,
+        false
+      )
+
+    return res.status(200).json({
+      success: true,
+      event,
+    })
+  } catch (error) {
+    console.error(error)
+
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to restore event',
     })
   }
 }
