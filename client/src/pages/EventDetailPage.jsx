@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 
+import api from '../api/axios'
+
 import {
   fetchEventById,
   updateEvent,
@@ -70,6 +72,11 @@ export default function EventDetailPage() {
       [e.target.name]: e.target.value,
     })
   }
+
+  async function handlePayment() {
+  const res = await api.post(`/api/events/${id}/checkout`)
+  window.location.href = res.data.url
+}
 
   // ✅ ARCHIVE (soft delete)
   async function handleArchive() {
@@ -164,6 +171,14 @@ export default function EventDetailPage() {
             >
               Archive
             </button>
+            {event.paymentStatus !== 'PAID' && (
+            <button
+              onClick={handlePayment}
+              className="px-3 py-1 text-sm bg-purple-600 text-white rounded"
+            >
+              Pay for Event
+            </button>
+)}
           </div>
         )}
       </div>
@@ -191,6 +206,15 @@ export default function EventDetailPage() {
             <p className="text-sm text-slate-500">Status</p>
             <p className="font-medium">{event.status}</p>
           </div>
+          <div>
+            <p className="text-sm text-slate-500">
+              Payment Status
+            </p>
+
+            <p className="font-medium">
+              {event.paymentStatus}
+            </p>
+        </div>
 
         </div>
       )}

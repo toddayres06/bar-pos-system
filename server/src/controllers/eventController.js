@@ -8,6 +8,9 @@ import {
   setEventArchived,
 } from '../services/eventService.js'
 
+import { createCheckoutSession } from '../services/stripeService.js'
+import prisma from '../config/prisma.js'
+
 export async function createEventHandler(req, res) {
   try {
     const event = await createEvent(
@@ -200,6 +203,38 @@ export async function restoreEventHandler(
     return res.status(500).json({
       success: false,
       message: 'Failed to restore event',
+    })
+  }
+}
+
+export async function createEventCheckoutHandler(req, res) {
+  try {
+    const { id } = req.params
+
+    const event = await prisma.event.findUnique({
+      where: { id },
+      include: { package: true },
+    })
+
+    if (!event) {
+      return res.status(404).json({
+        success: false,
+        message: 'Event not found',
+      })
+    }
+
+    const session = await createCheckoutSession(event)
+
+    return res.json({
+      success: true,
+      url: session.url,
+    })
+  } catch (error) {
+    console.error(error)
+
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to create checkout session',
     })
   }
 }

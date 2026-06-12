@@ -9,6 +9,7 @@ import {
   deleteEventHandler,
   archiveEventHandler,
   restoreEventHandler,
+  createEventCheckoutHandler,
 } from '../controllers/eventController.js'
 
 import { protect } from '../middleware/authMiddleware.js'
@@ -19,6 +20,11 @@ router.post('/', protect, createEventHandler)
 
 router.get('/', protect, getEventsHandler)
 
+router.post(
+  '/:id/checkout',
+  protect,
+  createEventCheckoutHandler
+)
 router.get(
   '/:id',
   protect,
