@@ -8,6 +8,8 @@ import authRoutes from './routes/authRoutes.js'
 import protectedRoutes from './routes/protectedRoutes.js'
 import dashboardRoutes from './routes/dashboardRoutes.js'
 import packageRoutes from './routes/packageRoutes.js'
+import eventRoutes from './routes/eventRoutes.js'
+import stripeRoutes from './routes/stripeRoutes.js'
 
 const app = express()
 
@@ -24,13 +26,13 @@ app.get('/api/health', (req, res) => {
 })
 
 app.use('/api/users', userRoutes)
-
 app.use('/api/dashboard', dashboardRoutes)
-
 app.use('/api/auth', authRoutes)
-
 app.use('/api/protected', protectedRoutes)
-
 app.use('/api/packages', packageRoutes)
+
+// ✅ MOVE THESE HERE
+app.use('/api/events', eventRoutes)
+app.use('/api/stripe', stripeRoutes)
 
 export default app
